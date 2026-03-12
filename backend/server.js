@@ -6,20 +6,26 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-
 const url = "mongodb://localhost:27017";
 const client = new MongoClient(url);
 const dbname = "SOLARSYSTEMS";
 
+// Yhdistä tietokantaan kerran
+async function connectDB() {
+    if (!client._connected) {
+        await client.connect();
+        client._connected = true;
+        console.log("MongoDB connected");
+    }
+}
+
 app.get("/starsystem", async (req, res) => {
     try {
-        await client.connect();
+        await connectDB();
         const db = client.db(dbname);
         const collection = db.collection("STARSYSTEM");
 
-        const data = await collection.findOne({
-            _id: new ObjectId("5f41351f4f3d9c58f07e1c49")
-        });
+        const data = await collection.find({}).toArray();
 
         res.json(data);
     } catch (err) {
@@ -28,4 +34,4 @@ app.get("/starsystem", async (req, res) => {
     }
 });
 
-app.listen(3001, () => console.log("Server running in port 3001"));
+app.listen(3001, () => console.log("Server running on port 3001"));

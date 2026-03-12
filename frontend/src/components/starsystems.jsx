@@ -1,28 +1,41 @@
 import { useEffect, useState } from "react";
 
 function StarSystems() {
-    const [system, setSystem] = useState(null);
+    const [systems, setSystems] = useState([]);
 
     useEffect(() => {
         fetch("http://localhost:3001/starsystem")
-        .then(res => res.json())
-        .then(data => setSystem(data));
+            .then(res => res.json())
+            .then(data => setSystems(data))
+            .catch(err => console.error("Fetch error:", err));
     }, []);
 
-    if (!system) return <p>loading ...</p>;
+    if (!systems || systems.length === 0) {
+        return <p>loading ...</p>;
+    }
 
     return (
         <div>
-            <h1>{system.STAR.starname} StarSystem</h1>
-            <ul>
-            {system.planet.map(p => (
-                <li key={p._id}>
-                {p.planet_name} - {p.planet_type}
-                </li>
+            {systems.map(system => (
+                <div key={system._id} style={{ marginBottom: "20px" }}>
+                    <h2>{system.STAR?.starname}</h2>
+
+                    <p><strong>Star type:</strong> {system.STAR?.type}</p>
+                    <p><strong>Mass:</strong> {system.STAR?.mass}</p>
+                    <p><strong>Age:</strong> {system.STAR?.age} billion years</p>
+
+                    <h3>Planets:</h3>
+                    <ul>
+                        {system.planet?.map(p => (
+                            <li key={p._id}>
+                                {p.planet_name} ({p.planet_type})
+                            </li>
+                        ))}
+                    </ul>
+                </div>
             ))}
-            </ul>
         </div>
-    )
+    );
 }
 
 export default StarSystems;

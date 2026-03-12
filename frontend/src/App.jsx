@@ -10,6 +10,7 @@ function App() {
       <div>
           <h1>star systems listed</h1>
           <StarSystems />
+
       </div>
     </>
   )
